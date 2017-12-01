@@ -30,7 +30,7 @@
 
 plugin geometry 	Urba_Terrain
 name:"Terrain"
-classID:#(667825,452456)
+classID:#(345645,452456)
 category:"CP | Urba"
 extends:Editable_poly replaceUI:true version:0
 (
@@ -82,7 +82,7 @@ extends:Editable_poly replaceUI:true version:0
 		--------------- CREATION  ----------------------------------------------------------------------------------------------------------------------	
 		tool create (	
 			on mousePoint click do	(	
-				nodeTM.translation = worldPoint
+				nodeTM.translation = gridPoint
 				
 				
 				#stop

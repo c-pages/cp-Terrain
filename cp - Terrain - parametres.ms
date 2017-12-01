@@ -29,6 +29,16 @@
 
 
 parameters params_global 		rollout:roll_global		(
+	--- les shapes ------------
+	shape_trottoires			type:#node 			ui:btn_pick_shape_trottoires
+	shape_gazons				type:#node 			ui:btn_pick_shape_gazons
+	shape_batiments			type:#node 			ui:btn_pick_shape_batiments
+	
+	shape_cadre				type:#node 			ui:btn_pick_shape_cadre
+	
+	--- le relief ------------	
+	poly_relief					type:#node 			ui:btn_pick_geo_relief
+	
 	/* 
 	------- Surface		------------------
 	surface_node						type:#node 								-- ui:btn_pick_surface
@@ -50,11 +60,38 @@ parameters params_global 		rollout:roll_global		(
 	 */
 )
 
+parameters params_resolution 		rollout:roll_resolution		(
+	resoltion				type:#float				default:20.		--	ui:spn_aplanir
+	
+)
+rollout roll_resolution "Résolution" 
+(
+	label 'lbl_resolution' "Résolution :" pos:[5,2] width:79 height:15 align:#left
+	spinner 'spn_nbres' "" pos:[87,1] width:80 height:16 range:[20,100000000000,500] type:#worldunits scale:1 align:#left
+)
 -------------------------------------------------------------------------------------------------------------------------------------------------
 --------------- ROLLOUT  ----------------------------------------------------------------------------------------------------------------------	
 -------------------------------------------------------------------------------------------------------------------------------------------------
 
-rollout roll_global 		"Global" 		rolledUp:false	(
+rollout roll_global "Global" width:162 height:197
+(
+	
+	fn shape_filt 		obj = superclassof obj == shape
+	fn geo_filt 		obj = superclassof obj == GeometryClass
+	
+	label 'lbl2' "Trottoires :" pos:[10,34] width:94 height:11 align:#left
+	pickbutton 'btn_pick_shape_trottoires' "Pick shape" pos:[8,46] width:145 height:16 filter:shape_filt autoDisplay:true align:#left
+	label 'lbl3' "Espaces verts :" pos:[10,64] width:94 height:11 align:#left
+	pickbutton 'btn_pick_shape_gazons' "Pick shape" pos:[8,76] width:145 height:16 filter:shape_filt autoDisplay:true align:#left
+	label 'lbl1' "Batiments :" pos:[10,4] width:94 height:11 align:#left	
+	
+	pickbutton 'btn_pick_shape_batiments' "Pick shape" pos:[8,16] width:145 height:16 filter:shape_filt autoDisplay:true align:#left
+	
+	label 'lbl_cadre' "Cadre :" pos:[10,94] width:94 height:11 align:#left
+	pickbutton 'btn_pick_shape_cadre' "Pick shape" pos:[8,106] width:145 height:16 filter:shape_filt autoDisplay:true align:#left
+	
+	label 'lbl_relief' "Relief :" pos:[10,139] width:94 height:11 align:#left
+	pickbutton 'btn_pick_geo_relief' "Pick node" pos:[8,151] width:145 height:16 filter:geo_filt autoDisplay:true align:#left
 	/* 
 -- 	local regle_sssurface_courant
 	
@@ -242,12 +279,9 @@ rollout roll_global 		"Global" 		rolledUp:false	(
 rollout roll_aPropos 		"A propos" 	rolledUp:true	(
 	label 'lbl_axeP' "Urba | V0.1  |" pos:[5,2]  align:#left
 	HyperLink 'hpl1' "Christophe Pagès" pos:[76,2] address:"http://c-pages.fr" color:(color 200 200 127.5) hovercolor:(color 250 250 150) visitedcolor:(color 200 200 127.5) align:#left
-	HyperLink 'hpl2' "GitHub" pos:[127,17] address:"https://github.com/c-pages/cp-Urba" color:(color 200 200 127.5) hovercolor:(color 250 250 150) visitedcolor:(color 200 200 127.5) align:#left
+	HyperLink 'hpl2' "GitHub" pos:[127,17] address:"https://github.com/c-pages/cp-Terrain" color:(color 200 200 127.5) hovercolor:(color 250 250 150) visitedcolor:(color 200 200 127.5) align:#left
 	label 'lbl6' "2017" pos:[5,17] align:#left
 )
-
-
-
 
 
 
