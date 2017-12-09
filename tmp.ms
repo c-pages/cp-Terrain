@@ -357,11 +357,12 @@ struct 	str_shape_outils	(
 					default: 0
 				)
 			)
-			
 			qsort 	result 	compareFN
 			
 			
-			result
+			-- retour ------------
+			if result.count>0	then 	result[1] 
+									else 		undefined
 		),
 		
 		
@@ -494,19 +495,23 @@ struct 	str_shape_outils	(
 				
 				
 				
-				local pt_cible 			= getKnotPoint 	shape_courant 	_id_spline		 id_knot_cible
+				
+				
+				------- Position cible -----------------------------------------------
+				local pt_cible 	
+				--- sinon c'est juste le point suivant du shape----------------------<
+				pt_cible 			= getKnotPoint 	shape_courant 	_id_spline		 id_knot_cible
 				
 				---- on gere les intersections -------------------------
 				local intersection 	= seg_shape_intersection		pt_courant		pt_cible		shape_test  	_id_spline
-				
-				---- INTERSECTION -------------
+				---- ona une INTERSECTION -------------
 				if intersection != undefined then (
 					debug "INTERSECTION"
 					
 					debug "intersection" 	var:intersection
 					
 					
-					--- le nouveau sens et le premier point ---
+					--- Projection ----------
 					if intersection.est_projection then (							
 						debug "	projection"	
 						
@@ -521,13 +526,13 @@ struct 	str_shape_outils	(
 							sens 				= -1
 						)
 						
+					--- Intersection ----------
 					) else (
 						
 						debug "	intersection"
 						
 						---- intersection avec shape decoupe ---------------
 						local quat_test = angle_from_points 	 intersection.pos		pt_courant		 ( getKnotPoint shape_test 	_id_spline  	intersection.knot_1 )							
-						
 						
 						if quat_test.z < 0 then (
 							
@@ -591,17 +596,7 @@ struct 	str_shape_outils	(
 				) ----------------------
 				
 				
-				debug "#	id_knot_cible"		var:id_knot_cible
-				debug "#	id_knot_Origine"	var:id_knot_Origine
-				
-				debug "#	shape_courant"	var:shape_courant.name
-				debug "#	shape_Origine"		var:shape_Origine.name
-				
-				debug "#	pt_cible"					var:pt_cible
-				debug "#	pos_knot_Origine"	var:pos_knot_Origine
-				
-				
-				--- si on a fait la boucle, ON SORT -----------
+				--- si on a fait la boucle, ON SORT -----------------------------------------------------
 				if shape_courant == shape_Origine and pt_cible == pos_knot_Origine  then (
 					
 					format "\n"
@@ -613,260 +608,129 @@ struct 	str_shape_outils	(
 					--- on ferme la spline ---
 					close  nvelleSpline _id_spline
 					
-				)
-				
-				------- creation du  POINT	-------------------------------------------------------------------------------------------
-				debug "###	creation du  POINT	###"
-				addknot 		nvelleSpline 1 #corner #line	pt_cible
-				pt_courant 	= pt_cible
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				/* 
-				--- sortie boucle ---------
-			 	if id_knot_courant == 1 and sens == -1  then (						
-					debug "BOUCLER id id_knot_suivant inf. à 1"
+				)	else (
 					
-					if not isclosed		shape_courant 	_id_spline	do (		
-						
-						--- on test la projection du premier knot ----------------
-						local pt1 = getKnotPoint shape_courant 	_id_spline 2
-						local pt2 = getKnotPoint shape_courant 	_id_spline 1
-						local inter_proj = projection_vec_sur_shape 	 pt1		pt2 			shape_test  	_id_spline
-						
-						
-						if inter_proj.count>0  do 	(
-				debug "projection" 	var:inter_proj[1]
-							pt_courant = inter_proj[1].pos
-							b_pointPose = true
-							--- on change de shape courant -----
-							local shpTmp 		= 	shape_courant
-							shape_courant 	= 	shape_test
-							shape_test 		= 	shpTmp
-						
-							if 	inter_proj[1].knot_1 < 	inter_proj[1].knot_2 then (
-								
-								debug	"--> sens intersection inverse"
-								sens 			= -1
-								
-								id_knot_courant		=	inter_proj[1].knot_2	
-							) else (
-							
-								debug	"--> sens intersection Normal"
-								sens 			= 1
-								id_knot_courant		=	inter_proj[1].knot_1	
-							)
-						)
-					)
-				) 
-				if id_knot_courant ==  numKnots	shape_courant	_id_spline	and sens == 1 then (	
-					debug "BOUCLER id_knot_suivant sup. à 1"
-					
-					if not isclosed		shape_courant 	_id_spline	do (							
-						--- on test la projection du premier knot ----------------
-						local pt1 = getKnotPoint shape_courant 	_id_spline ( ( numKnots	shape_courant	_id_spline ) - 1 )
-						local pt2 = getKnotPoint shape_courant 	_id_spline ( numKnots	shape_courant	_id_spline )
-						local inter_proj = projection_vec_sur_shape 	 pt1		pt2 			shape_test  	_id_spline
-						if inter_proj.count>0  do 	(	
-				debug "projection" 	var:inter_proj[1]
-							pt_courant = inter_proj[1].pos
-							
-							b_pointPose = true
-							--- on change de shape courant -----
-							local shpTmp 		= 	shape_courant
-							shape_courant 	= 	shape_test
-							shape_test 		= 	shpTmp
-							
-							if 	inter_proj[1].knot_1 < 	inter_proj[1].knot_2 then (
-								
-								debug	"--> sens intersection Normal"
-								sens 			= 1
-								
-								id_knot_courant		=	inter_proj[1].knot_1	
-							) else (
-							
-								debug	"--> sens intersection inverse"
-								sens 			= -1
-								id_knot_courant		=	inter_proj[1].knot_2	
-							)
-						)
-						
-					)
-					
-				)  
-
-
-				if not b_pointPose do (
-				
+					------- sinon CREATION du  POINT	-------------------------------------------------------------
+					debug "###	creation du  POINT	###"
+					addknot 		nvelleSpline 1 #corner #line	pt_cible
+					pt_courant 	= pt_cible
 					
 					
-					--- on gere la suite -------------------------
-					local intersections 	= seg_shape_intersection		pt_courant		pt_suivant		shape_test  	_id_spline	
-					
-					--- cas 1 : intersection avec decoupe --------------------
-					if intersections.count > 0 then (
+					--- si on est sur un SHAPE OUVERT ------------------
+					if 	not isclosed shape_courant 	_id_spline do (
 						
-						
-						local intersec = intersections[1]
--- 						debug "intersec" var:intersec
-						
-						
-						--- le nouveau sens et le premier point ---
-						if intersec.est_projection then (
+						--- on regarde si on vient du PREMIER KNOT ( c'est a dire qu'on cible le dernier .... ) ----------------------
+						if id_knot_cible == numKnots shape_courant 	_id_spline  and sens == -1 and pt_courant == getKnotPoint shape_courant 	_id_spline  1 	then (
 							
-	 					debug "PROJECTION"
--- 							debug ">>> projection"
+							debug "Projection PREMIER Knot"					
 							
-							debug "projection" 	var:intersec
+							--- on test la projection du dernier knot ----------------
+							local pt1 = getKnotPoint shape_courant 	_id_spline 2
+							local pt2 = getKnotPoint shape_courant 	_id_spline 1
+							local inter_proj = projection_vec_sur_shape 	 pt1		pt2 			shape_test  	_id_spline
 							
-							--- on change de shape courant -----
-							local shpTmp 		= 	shape_courant
-							shape_courant 	= 	shape_test
-							shape_test 		= 	shpTmp
-							
-							---- projection extremités  du shape decoupe ---------------
-							if intersec.knot_1 == 1 then (
-	 					debug "proj. du PREMIER point"
-								id_knot_courant 	= intersec.knot_1	
-								sens 					= 1
-							) else (
-	 					debug "proj. du DERNIER point"
-								id_knot_courant	=	1
-								sens 					= -1
-							)
-	-- 						addknot nvelleSpline 1 #corner #line	pt_suivant
-							
-						) else (
-							
-							debug "INTERSECTION"
--- 							debug ">>> intersection"
-							
-							---- intersection avec shape decoupe ---------------
-							local quat_test = angle_from_points  intersec.pos		pt_courant		 ( getKnotPoint shape_test 	_id_spline  	intersec.knot_1 )
--- 							debug "quat_test" 	var:quat_test
--- 							debug "angle quat_test" 	var:quat_test.angle
--- 							
--- 							debug "quat_test.z" 	var:quat_test.z
-							
-							
-							
-							if quat_test.z < 0 then (
+							--- on a une Projection ---------------------
+							if inter_proj != undefined  do 	(	
 								
-								debug	"sens inverse"
+								debug "On a une projection" 	var:inter_proj
 								
-								if 	intersec.knot_1 < 	intersec.knot_2 then (
+								--- CREATION du  POINT projeté -----
+								debug "###	creation du  POINT projeté	###"
+								pt_cible 			= inter_proj.pos								
+								addknot 	nvelleSpline 1 #corner #line	pt_cible
+								pt_courant 	= pt_cible
+								
+								--- on change de shape courant -----
+								local shpTmp 		= 	shape_courant
+								shape_courant 	= 	shape_test
+								shape_test 		= 	shpTmp
+								
+								--- check le nouveau sens ----------------
+								if 	inter_proj.knot_1 < 	inter_proj.knot_2 then (
 									
-									debug	"--> sens intersection inverse"
-									sens 			= -1
-									
-									id_knot_courant		=	intersec.knot_2	
-								) else (
-								
-									debug	"--> sens intersection Normal"
-									sens 			= 1
-									id_knot_courant		=	intersec.knot_1	
-								)
-									
-								
-							) else (
-								debug	"sens correct"
-								
-								if 	intersec.knot_1 < 	intersec.knot_2 then (
-									debug	"--> sens intersection Normal"
-									sens 			= 1
-									
-									id_knot_courant		=	intersec.knot_1	
+									debug	"--> sens Normal"
+									sens 				= 1									
+									id_knot_cible	=	inter_proj.knot_1	
 									
 								) else (
-									
-									debug	"--> sens intersection inverse"
-									if intersec.knot_2 == 1 then
-										sens 			= 1
-									else
-										sens 			= -1	
 								
-									d_knot_courant		=	intersec.knot_1		
+									debug	"--> sens inverse"
+									sens 				= -1
+									id_knot_cible	=	inter_proj.knot_2	
 								)
-													
-							)
-						
--- 							pt_courant 			= intersec.pos	
+								
+							) --- fin on a une projection
 							
+						) ----- fin Dernier knot  ------------------------
+						
+						--- on regarde si on vient du DERNIER KNOT ( c'est a dire qu'on cible le premier .... ) ----------------------
+						else if id_knot_cible == 1 and sens == 1  and pt_courant == getKnotPoint shape_courant 	_id_spline  (numKnots shape_courant 	_id_spline) do (
 							
-							--- on change de shape courant -----
-							local shpTmp 		= 	shape_courant
-							shape_courant 	= 	shape_test
-							shape_test 		= 	shpTmp
+							debug "Projection DENIER Knot"					
 							
-	-- 						boucle_finie = true
-						)
+							--- on test la projection du dernier knot ----------------
+							local pt1 = getKnotPoint shape_courant 	_id_spline ( ( numKnots	shape_courant	_id_spline ) - 1 )
+							local pt2 = getKnotPoint shape_courant 	_id_spline ( numKnots	shape_courant	_id_spline )
+							local inter_proj = projection_vec_sur_shape 	 pt1		pt2 			shape_test  	_id_spline
+							
+							--- on a une Projection ---------------------
+							if inter_proj != undefined  do 	(	
+								
+								debug "On a une projection" 	var:inter_proj
+								
+								--- CREATION du  POINT projeté -----
+								debug "###	creation du  POINT projeté	###"
+								pt_cible 			= inter_proj.pos								
+								addknot 	nvelleSpline 1 #corner #line	pt_cible
+								pt_courant 	= pt_cible
+								
+								--- on change de shape courant -----
+								local shpTmp 		= 	shape_courant
+								shape_courant 	= 	shape_test
+								shape_test 		= 	shpTmp
+								
+								--- check le nouveau sens ----------------
+								if 	inter_proj.knot_1 < 	inter_proj.knot_2 then (
+									
+									debug	"--> sens Normal"
+									sens 				= 1									
+									id_knot_cible	=	inter_proj.knot_1	
+									
+								) else (
+								
+									debug	"--> sens inverse"
+									sens 				= -1
+									id_knot_cible	=	inter_proj.knot_2	
+								)
+							) --- fin on a une projection
+							
+						) ----- fin Dernier knot  ------------------------
 						
-						
-						--- on ajoute le point d'intersection ---------
-						pt_courant = intersec.pos
-	-- 					addknot nvelleSpline 1 #corner #line	intersec.pos
-						
-						
-					--- cas 2 : on continue sur la meme spline --------------------
-					) else (
-						
-						debug "CONTINUE sur la meme spline"
-						id_knot_courant += sens
-						
-						if id_knot_courant < 1 do (						
-							debug "BOUCLER id courant inf. à 1"
-							id_knot_courant = numKnots	shape_courant	_id_spline	
-						) 
-						
-						if id_knot_courant > numKnots	shape_courant	_id_spline	do (	
-							debug "BOUCLER id courant sup. à 1"
-							id_knot_courant = 1
-						)  
-						
-						pt_courant 	= getKnotPoint shape_courant 	_id_spline	 	id_knot_courant
-						
-					) -- fin cas 2 --------
-				
-				
- 				)
--- 				break ()
+					) --- fin Shape ouvert ---------
 					
+					
+				) -- fin creation du point	-------------------------------------------------------------------------------------------
 				
-				local nbrePoint_nvlleSpline = numKnots	nvelleSpline	_id_spline
-				if id_knot_courant == id_knot_Origine and shape_courant == shape_Origine and pt_courant == pos_knot_Origine and nbrePoint_nvlleSpline > 1 then (
-					format "\n"
-					debug "FIN"
-					boucle_finie = true
-					close  nvelleSpline _id_spline
-				) 
-				*/
+
 				
 				
-				
-				
-				
-				---- debug , sortir de secours ----
+				---- debug , sortir de secours ----------------
 				if sortieDeSecours > 50 do boucle_finie = true
 				if keyboard.escPressed  do boucle_finie = true
 				if numKnots nvelleSpline > 10  do (
 					boucle_finie = true
 					debug "SORTIE DE SECOURS"
 				)
+				---- debug , sortir de secours ----------------
+				
+				
+				
 				
 			)	--	fin boucle ----------------------------------------------------------------------------------------------------------
 			
 			
 			updateShape nvelleSpline
 			select nvelleSpline
-			
-			
 			redrawviews ()
 			
 		),
