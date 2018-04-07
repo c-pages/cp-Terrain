@@ -79,8 +79,8 @@ struct 	str_shape_outils	(
 		fn orienter_splines 				_shape	=(
 			for id_spline = 1 to numsplines _shape do
 				if not est_sensPositif 	_shape 	id_spline do 
-					reverse shp_cadre 	id_spline
-			updateShape shp_cadre
+					reverse _shape 	id_spline
+			updateShape _shape
 		),
 		fn fermer_splines 				_shape 	=(
 			for id_spline = 1 to numsplines _shape do
@@ -736,6 +736,8 @@ struct	str_terrain	(
 				
 				---- DEBUG ------------
 				sortieDeSecours += 1
+				id_spline_cib = 1
+				
 				
 				format "\n\n-------------------------------------------------------------------------------------------------\n" 
 				debug "Point numero" 	var:(numknots shp_result )
@@ -747,8 +749,8 @@ struct	str_terrain	(
 				--- On cherche le prochain point -----------
 				
 				------- Position cible -----------------------------------------------
-				local pt_cible 			= getKnotPoint 	shape_courant 	_id_spline		 id_knot_cible
-				local intersection 	= outils.seg_shape_intersection		pt_courant		pt_cible		shape_test  	_id_spline
+				local pt_cible 			= getKnotPoint 	shp_courant 	id_spline_cib		 id_knot_cible
+				local intersection 		= outils.seg_shape_intersection		pt_courant		pt_cible		shape_test  	_id_spline
 				
 				
 				
@@ -794,19 +796,19 @@ shp_cadre 		= $'tracé cadre'
 shp_decoupe1	= $'tracé decoupe 1'
 shp_decoupe2	= $'tracé decoupe 2'
 
---- vider la scene -----------
-for obj in objects do
-	if obj != shp_cadre and obj != shp_decoupe1 and obj != shp_decoupe2 do
-		delete obj		
+-- vider la scene -----------
+-- for obj in objects do
+-- 	if obj != shp_cadre and obj != shp_decoupe1 and obj != shp_decoupe2 do
+-- 		delete obj		
 
 --- vider listener -----------
 clearlistener () 
 
 --- Terrain ----------------------------------------
 mon_terrain = str_terrain ()
-mon_terrain.set_cadre 				$'tracé cadre'
-mon_terrain.ajouter_decoupe		$'tracé decoupe 1'
-mon_terrain.ajouter_decoupe		$'tracé decoupe 2'
+mon_terrain.set_cadre 					shp_cadre
+mon_terrain.ajouter_decoupe		shp_decoupe1
+-- mon_terrain.ajouter_decoupe		shp_decoupe2
 mon_terrain.decouper ()
 
 	
